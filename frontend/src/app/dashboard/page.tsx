@@ -7,6 +7,7 @@ import { StatCard } from "@/components/ui/stat-card";
 import { ActivityItem } from "@/components/ui/activity-item";
 import { PlanBadge } from "@/components/ui/plan-badge";
 import { CardSkeleton, ActivitySkeleton } from "@/components/ui/loading-skeleton";
+import { useToast } from "@/components/ui/toast";
 import {
   ArrowRight,
   BarChart3,
@@ -19,13 +20,29 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [usage, setUsage] = useState<UsageRecord[] | null>(null);
   const [activities, setActivities] = useState<Activity[] | null>(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  // Handle checkout redirect params
+  useEffect(() => {
+    const checkout = searchParams.get("checkout");
+    if (checkout === "success") {
+      toast("success", "Subscription activated! Welcome aboard.");
+      router.replace("/dashboard", { scroll: false });
+    } else if (checkout === "canceled") {
+      toast("info", "Checkout was canceled. You can try again anytime.");
+      router.replace("/dashboard", { scroll: false });
+    }
+  }, [searchParams, toast, router]);
 
   const fetchData = useCallback(async () => {
     const [u, a] = await Promise.allSettled([
