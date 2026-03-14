@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { ApiError } from "@/lib/api";
 
@@ -12,7 +12,21 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+
+  const validateEmail = useCallback((v: string) => {
+    if (!v) return "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return "Enter a valid email";
+    return "";
+  }, []);
+
+  const validateField = useCallback((field: string, value: string) => {
+    let err = "";
+    if (field === "email") err = validateEmail(value);
+    else if (field === "password" && !value) err = "Password is required";
+    setFieldErrors((prev) => ({ ...prev, [field]: err }));
+  }, [validateEmail]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -60,9 +74,13 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/10"
+            onBlur={() => validateField("email", email)}
+            className={`w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/10 ${fieldErrors.email ? "border-red-300" : "border-slate-200"}`}
             placeholder="you@company.com"
           />
+          {fieldErrors.email && (
+            <p className="mt-1 text-xs text-red-500">{fieldErrors.email}</p>
+          )}
         </div>
 
         <div>
@@ -86,9 +104,13 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/10"
+            onBlur={() => validateField("password", password)}
+            className={`w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/10 ${fieldErrors.password ? "border-red-300" : "border-slate-200"}`}
             placeholder="Enter your password"
           />
+          {fieldErrors.password && (
+            <p className="mt-1 text-xs text-red-500">{fieldErrors.password}</p>
+          )}
         </div>
 
         <button

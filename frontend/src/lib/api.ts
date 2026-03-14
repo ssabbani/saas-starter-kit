@@ -4,9 +4,36 @@ class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
+    public code?: string,
   ) {
     super(message);
   }
+}
+
+/** Map status codes to user-friendly fallback messages. */
+const STATUS_MESSAGES: Record<number, string> = {
+  400: "Invalid request. Please check your input.",
+  401: "Session expired. Please sign in again.",
+  403: "You don't have permission to do that.",
+  404: "The requested resource was not found.",
+  409: "This conflicts with an existing resource.",
+  422: "Please check your input and try again.",
+  429: "Too many requests. Please wait a moment.",
+  500: "Something went wrong on our end. Please try again.",
+  502: "Service temporarily unavailable. Please try again.",
+  503: "Service temporarily unavailable. Please try again.",
+};
+
+function friendlyMessage(status: number, body: Record<string, unknown>): string {
+  if (typeof body.detail === "string" && body.detail.length > 0) {
+    return body.detail;
+  }
+  // FastAPI validation errors come as an array
+  if (Array.isArray(body.detail) && body.detail.length > 0) {
+    const first = body.detail[0];
+    if (typeof first?.msg === "string") return first.msg;
+  }
+  return STATUS_MESSAGES[status] || "Request failed. Please try again.";
 }
 
 async function request<T>(
@@ -49,14 +76,18 @@ async function request<T>(
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         window.location.href = "/login";
-        throw new ApiError(401, "Session expired");
+        throw new ApiError(401, "Session expired", "SESSION_EXPIRED");
       }
     }
   }
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, body.detail || "Request failed");
+    throw new ApiError(
+      res.status,
+      friendlyMessage(res.status, body),
+      typeof body.code === "string" ? body.code : undefined,
+    );
   }
 
   return res.json();

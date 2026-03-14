@@ -51,6 +51,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </Link>
         <button
           onClick={onClose}
+          aria-label="Close navigation menu"
           className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 md:hidden"
         >
           <X className="h-5 w-5" />
@@ -58,7 +59,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      <nav aria-label="Main navigation" className="flex-1 space-y-1 px-3 py-4">
         {items.map((item) => {
           const active =
             item.href === "/dashboard"

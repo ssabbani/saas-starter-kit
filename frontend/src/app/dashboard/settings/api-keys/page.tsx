@@ -3,7 +3,7 @@
 import { api } from "@/lib/api";
 import { useToast } from "@/components/ui/toast";
 import { Check, Copy, Key, RotateCw, Trash2, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface ApiKeyInfo {
   key_prefix: string;
@@ -159,18 +159,53 @@ export default function ApiKeysPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <ApiKeyModal
+          newKey={newKey}
+          copied={copied}
+          onCopy={handleCopy}
+          onClose={() => setShowModal(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function ApiKeyModal({
+  newKey,
+  copied,
+  onCopy,
+  onClose,
+}: {
+  newKey: string;
+  copied: boolean;
+  onCopy: () => void;
+  onClose: () => void;
+}) {
+  const doneRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    doneRef.current?.focus();
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="apikey-modal-title">
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setShowModal(false)}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm modal-backdrop"
+            onClick={onClose}
           />
-          <div className="relative z-10 mx-4 w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl">
+          <div className="relative z-10 mx-4 w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl modal-content">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-slate-900">
+              <h3 id="apikey-modal-title" className="text-lg font-semibold text-slate-900">
                 Your New API Key
               </h3>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={onClose}
+                aria-label="Close dialog"
                 className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
               >
                 <X className="h-5 w-5" />
@@ -188,7 +223,8 @@ export default function ApiKeysPage() {
                 {newKey}
               </code>
               <button
-                onClick={handleCopy}
+                onClick={onCopy}
+                aria-label="Copy API key"
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:bg-slate-50"
               >
                 {copied ? (
@@ -200,14 +236,13 @@ export default function ApiKeysPage() {
             </div>
 
             <button
-              onClick={() => setShowModal(false)}
+              ref={doneRef}
+              onClick={onClose}
               className="mt-4 w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
             >
               Done
             </button>
           </div>
         </div>
-      )}
-    </div>
   );
 }

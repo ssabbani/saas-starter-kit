@@ -12,6 +12,7 @@ export function Topbar({ title, onMenuClick }: TopbarProps) {
     <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-slate-200 bg-white/80 px-4 backdrop-blur-sm md:hidden">
       <button
         onClick={onMenuClick}
+        aria-label="Open navigation menu"
         className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
       >
         <Menu className="h-5 w-5" />

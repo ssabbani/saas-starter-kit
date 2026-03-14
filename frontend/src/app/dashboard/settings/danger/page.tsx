@@ -5,7 +5,7 @@ import { api } from "@/lib/api";
 import { useToast } from "@/components/ui/toast";
 import { AlertTriangle, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function DangerZonePage() {
   const { logout } = useAuth();
@@ -69,21 +69,63 @@ export default function DangerZonePage() {
 
       {/* Confirmation Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <DeleteModal
+          confirmText={confirmText}
+          setConfirmText={setConfirmText}
+          canDelete={canDelete}
+          deleting={deleting}
+          onDelete={handleDelete}
+          onClose={() => setShowModal(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function DeleteModal({
+  confirmText,
+  setConfirmText,
+  canDelete,
+  deleting,
+  onDelete,
+  onClose,
+}: {
+  confirmText: string;
+  setConfirmText: (v: string) => void;
+  canDelete: boolean;
+  deleting: boolean;
+  onDelete: () => void;
+  onClose: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setShowModal(false)}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm modal-backdrop"
+            onClick={onClose}
           />
-          <div className="relative z-10 mx-4 w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl">
+          <div ref={modalRef} className="relative z-10 mx-4 w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl modal-content">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-red-500" />
-                <h3 className="text-lg font-semibold text-slate-900">
+                <h3 id="delete-modal-title" className="text-lg font-semibold text-slate-900">
                   Delete Account
                 </h3>
               </div>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={onClose}
+                aria-label="Close dialog"
                 className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
               >
                 <X className="h-5 w-5" />
@@ -101,23 +143,25 @@ export default function DangerZonePage() {
                 confirm
               </label>
               <input
+                ref={inputRef}
                 type="text"
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
                 placeholder="DELETE"
+                aria-label="Type DELETE to confirm"
                 className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
               />
             </div>
 
             <div className="mt-5 flex justify-end gap-3">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={onClose}
                 className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
               >
                 Cancel
               </button>
               <button
-                onClick={handleDelete}
+                onClick={onDelete}
                 disabled={!canDelete || deleting}
                 className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -126,7 +170,5 @@ export default function DangerZonePage() {
             </div>
           </div>
         </div>
-      )}
-    </div>
   );
 }

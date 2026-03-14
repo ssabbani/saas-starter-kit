@@ -3,6 +3,8 @@
 import { api } from "@/lib/api";
 import type { AdminActivity } from "@/lib/types";
 import { DataTable, type Column } from "@/components/ui/data-table";
+import { TableSkeleton } from "@/components/ui/loading-skeleton";
+import { useDebounce } from "@/lib/use-debounce";
 import { RefreshCw, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -30,7 +32,8 @@ function formatTimestamp(dateStr: string) {
 export default function AdminActivityPage() {
   const [activities, setActivities] = useState<AdminActivity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const search = useDebounce(searchInput);
   const [actionFilter, setActionFilter] = useState("all");
   const [autoRefresh, setAutoRefresh] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -140,9 +143,7 @@ export default function AdminActivityPage() {
   );
 
   if (loading) {
-    return (
-      <div className="h-64 animate-pulse rounded-xl bg-slate-100" />
-    );
+    return <TableSkeleton rows={8} />;
   }
 
   return (
@@ -154,8 +155,9 @@ export default function AdminActivityPage() {
           <input
             type="text"
             placeholder="Search by user email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search activity"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>

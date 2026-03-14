@@ -7,20 +7,56 @@ import { ActivityItem } from "@/components/ui/activity-item";
 import { CardSkeleton } from "@/components/ui/loading-skeleton";
 import { CreditCard, DollarSign, TrendingUp, Users } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-} from "recharts";
+import dynamic from "next/dynamic";
+
+const ResponsiveContainer = dynamic(
+  () => import("recharts").then((m) => m.ResponsiveContainer),
+  { ssr: false },
+);
+const LineChart = dynamic(
+  () => import("recharts").then((m) => m.LineChart),
+  { ssr: false },
+);
+const Line = dynamic(
+  () => import("recharts").then((m) => m.Line),
+  { ssr: false },
+);
+const XAxis = dynamic(
+  () => import("recharts").then((m) => m.XAxis),
+  { ssr: false },
+);
+const YAxis = dynamic(
+  () => import("recharts").then((m) => m.YAxis),
+  { ssr: false },
+);
+const Tooltip = dynamic(
+  () => import("recharts").then((m) => m.Tooltip),
+  { ssr: false },
+);
+const CartesianGrid = dynamic(
+  () => import("recharts").then((m) => m.CartesianGrid),
+  { ssr: false },
+);
+const PieChart = dynamic(
+  () => import("recharts").then((m) => m.PieChart),
+  { ssr: false },
+);
+const Pie = dynamic(
+  () => import("recharts").then((m) => m.Pie),
+  { ssr: false },
+);
+const Cell = dynamic(
+  () => import("recharts").then((m) => m.Cell),
+  { ssr: false },
+);
+const BarChart = dynamic(
+  () => import("recharts").then((m) => m.BarChart),
+  { ssr: false },
+);
+const Bar = dynamic(
+  () => import("recharts").then((m) => m.Bar),
+  { ssr: false },
+);
 
 const PLAN_COLORS: Record<string, string> = {
   free: "#94a3b8",

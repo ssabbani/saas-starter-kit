@@ -16,8 +16,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-slate-50 text-slate-900 antialiased">
+        <a href="#main-content" className="skip-to-content">
+          Skip to content
+        </a>
         <AuthProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <div id="main-content">{children}</div>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>
