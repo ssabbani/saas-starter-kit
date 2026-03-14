@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { api, ApiError } from "./api";
+import { api } from "./api";
 import type { TokenResponse, User } from "./types";
 
 interface AuthContextValue {
