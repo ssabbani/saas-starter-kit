@@ -17,6 +17,9 @@ const pageTitles: Record<string, string> = {
   "/dashboard/billing": "Billing",
   "/dashboard/api-keys": "API Keys",
   "/dashboard/admin": "Admin",
+  "/dashboard/admin/users": "Admin",
+  "/dashboard/admin/subscriptions": "Admin",
+  "/dashboard/admin/activity": "Admin",
 };
 
 export default function DashboardLayout({

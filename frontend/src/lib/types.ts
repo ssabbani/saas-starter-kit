@@ -59,3 +59,28 @@ export interface TokenResponse {
 export interface CheckoutResponse {
   checkout_url: string;
 }
+
+export interface AdminUser extends User {
+  is_active: boolean;
+  subscription: Subscription | null;
+  usage: UsageRecord[];
+}
+
+export interface AdminActivity extends Activity {
+  user_email: string;
+  ip_address: string | null;
+}
+
+export interface AdminSubscription extends Subscription {
+  user_email: string;
+  user_name: string;
+  plan: string;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+}
