@@ -9,6 +9,11 @@ import { useEffect, useMemo, useState } from "react";
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/dashboard/settings": "Settings",
+  "/dashboard/settings/security": "Security",
+  "/dashboard/settings/notifications": "Notifications",
+  "/dashboard/settings/api-keys": "API Keys",
+  "/dashboard/settings/billing": "Billing",
+  "/dashboard/settings/danger": "Danger Zone",
   "/dashboard/billing": "Billing",
   "/dashboard/api-keys": "API Keys",
   "/dashboard/admin": "Admin",

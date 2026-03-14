@@ -60,7 +60,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       {/* Nav */}
       <nav className="flex-1 space-y-1 px-3 py-4">
         {items.map((item) => {
-          const active = pathname === item.href;
+          const active =
+            item.href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
