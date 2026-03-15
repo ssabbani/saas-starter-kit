@@ -17,8 +17,8 @@ import { usePathname, useRouter } from "next/navigation";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
-  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
-  { href: "/dashboard/api-keys", label: "API Keys", icon: Key },
+  { href: "/dashboard/settings/billing", label: "Billing", icon: CreditCard },
+  { href: "/dashboard/settings/api-keys", label: "API Keys", icon: Key },
 ];
 
 const adminItem = { href: "/dashboard/admin", label: "Admin", icon: Shield };

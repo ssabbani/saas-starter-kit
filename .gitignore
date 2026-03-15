@@ -49,6 +49,7 @@ Thumbs.db
 htmlcov/
 .pytest_cache/
 .mypy_cache/
+test.db
 
 # Alembic
 alembic/versions/__pycache__/

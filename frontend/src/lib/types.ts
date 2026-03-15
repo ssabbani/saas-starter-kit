@@ -62,8 +62,13 @@ export interface CheckoutResponse {
 
 export interface AdminUser extends User {
   is_active: boolean;
+}
+
+export interface AdminUserDetail {
+  user: AdminUser;
   subscription: Subscription | null;
   usage: UsageRecord[];
+  activity: Activity[];
 }
 
 export interface AdminActivity extends Activity {

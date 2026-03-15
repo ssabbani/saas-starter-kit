@@ -80,7 +80,7 @@ export default function AdminOverviewPage() {
   const fetchData = useCallback(async () => {
     const [s, u, a] = await Promise.allSettled([
       api.get<AdminStats>("/api/admin/stats"),
-      api.get<{ users: AdminUser[] }>("/api/admin/users?per_page=1000"),
+      api.get<{ users: AdminUser[] }>("/api/admin/users?per_page=100"),
       api.get<{ logs: AdminActivity[] }>("/api/admin/activity?per_page=10"),
     ]);
     if (s.status === "fulfilled") setStats(s.value);

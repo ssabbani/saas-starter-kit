@@ -43,6 +43,7 @@ class UserResponse(BaseModel):
     avatar_url: str
     role: str
     plan: str
+    is_active: bool = True
     is_email_verified: bool
     stripe_customer_id: Optional[str] = None
     trial_ends_at: Optional[datetime] = None

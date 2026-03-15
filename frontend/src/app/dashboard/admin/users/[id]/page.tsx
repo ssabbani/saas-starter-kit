@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/lib/api";
-import type { AdminUser, AdminActivity } from "@/lib/types";
+import type { AdminUser, AdminUserDetail, Subscription, UsageRecord, Activity } from "@/lib/types";
 import { PlanBadge } from "@/components/ui/plan-badge";
 import { ActivityItem } from "@/components/ui/activity-item";
 import { useToast } from "@/components/ui/toast";
@@ -32,21 +32,20 @@ export default function UserDetailPage() {
   const { user: currentUser } = useAuth();
   const { toast } = useToast();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [activities, setActivities] = useState<AdminActivity[]>([]);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [usage, setUsage] = useState<UsageRecord[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
 
   const isSuperAdmin = currentUser?.role === "super_admin";
 
   const fetchUser = useCallback(async () => {
     try {
-      const [u, a] = await Promise.all([
-        api.get<AdminUser>(`/api/admin/users/${userId}`),
-        api.get<{ logs: AdminActivity[] }>(
-          `/api/admin/activity?user_id=${userId}&per_page=20`,
-        ),
-      ]);
-      setUser(u);
-      setActivities(Array.isArray(a.logs) ? a.logs : []);
+      const detail = await api.get<AdminUserDetail>(`/api/admin/users/${userId}`);
+      setUser(detail.user);
+      setSubscription(detail.subscription);
+      setUsage(Array.isArray(detail.usage) ? detail.usage : []);
+      setActivities(Array.isArray(detail.activity) ? detail.activity : []);
     } catch {
       setUser(null);
     } finally {
@@ -64,7 +63,7 @@ export default function UserDetailPage() {
         `/api/admin/users/${userId}`,
         patch,
       );
-      setUser(updated);
+      setUser((prev) => (prev ? { ...prev, ...updated } : updated));
       toast("success", "User updated");
     } catch {
       toast("error", "Failed to update user");
@@ -204,32 +203,32 @@ export default function UserDetailPage() {
       {/* Subscription */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h3 className="text-sm font-semibold text-slate-900">Subscription</h3>
-        {user.subscription ? (
+        {subscription ? (
           <div className="mt-3 grid gap-4 sm:grid-cols-3">
             <div>
               <p className="text-xs text-slate-500">Status</p>
               <span
                 className={`mt-0.5 inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
-                  user.subscription.status === "active"
+                  subscription.status === "active"
                     ? "bg-green-100 text-green-700"
-                    : user.subscription.status === "trialing"
+                    : subscription.status === "trialing"
                       ? "bg-blue-100 text-blue-700"
                       : "bg-slate-100 text-slate-600"
                 }`}
               >
-                {user.subscription.status}
+                {subscription.status}
               </span>
             </div>
             <div>
               <p className="text-xs text-slate-500">Period End</p>
               <p className="mt-0.5 text-sm font-medium text-slate-700">
-                {formatDate(user.subscription.current_period_end)}
+                {formatDate(subscription.current_period_end)}
               </p>
             </div>
             <div>
               <p className="text-xs text-slate-500">Cancels at End</p>
               <p className="mt-0.5 text-sm font-medium text-slate-700">
-                {user.subscription.cancel_at_period_end ? "Yes" : "No"}
+                {subscription.cancel_at_period_end ? "Yes" : "No"}
               </p>
             </div>
           </div>
@@ -239,11 +238,11 @@ export default function UserDetailPage() {
       </div>
 
       {/* Usage */}
-      {user.usage && user.usage.length > 0 && (
+      {usage.length > 0 && (
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <h3 className="text-sm font-semibold text-slate-900">Usage</h3>
           <div className="mt-4 space-y-4">
-            {user.usage.map((u) => (
+            {usage.map((u) => (
               <div key={u.metric_name}>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-slate-600 capitalize">

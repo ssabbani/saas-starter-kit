@@ -41,7 +41,7 @@ export default function AdminActivityPage() {
   const fetchActivities = useCallback(async () => {
     try {
       const data = await api.get<{ logs: AdminActivity[] }>(
-        "/api/admin/activity?per_page=200",
+        "/api/admin/activity?per_page=100",
       );
       setActivities(Array.isArray(data.logs) ? data.logs : []);
     } catch {

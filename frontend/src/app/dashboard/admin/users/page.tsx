@@ -58,9 +58,15 @@ export default function AdminUsersPage() {
 
   const fetchUsers = useCallback(async () => {
     try {
-      const data = await api.get<{ users: AdminUser[] }>("/api/admin/users?per_page=1000");
-      setUsers(Array.isArray(data.users) ? data.users : []);
-    } catch {
+      const data = await api.get<{ users: AdminUser[] } | AdminUser[]>("/api/admin/users?per_page=100");
+      // Debug: log the raw response shape
+      console.log("[AdminUsers] raw response:", data);
+      // Handle both {users: [...]} wrapper and direct array responses
+      const list = Array.isArray(data) ? data : Array.isArray(data.users) ? data.users : [];
+      console.log("[AdminUsers] extracted users:", list.length);
+      setUsers(list);
+    } catch (err) {
+      console.error("[AdminUsers] fetch error:", err);
       setUsers([]);
     } finally {
       setLoading(false);

@@ -23,6 +23,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.APP_NAME,
+    description="Production-ready SaaS backend with auth, billing, admin, and API key management.",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
     lifespan=lifespan,
 )
 
@@ -60,6 +64,7 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api")
 
 
-@app.get("/health")
+@app.get("/health", tags=["system"], summary="Health check")
 async def health_check():
+    """Returns 200 if the service is running. Use for uptime monitoring."""
     return {"status": "healthy", "app": settings.APP_NAME}
